@@ -61,5 +61,3 @@ Insert gif or link to demo
 - JavaScript
 - Material-UI (MUI)
 - React Router
-
-**Server:** Node
