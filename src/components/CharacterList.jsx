@@ -143,11 +143,11 @@ function CharacterList() {
 
   const searchBarStyles = css`
     position: fixed;
-    top: 100px;
+    top: 40px;
     left: 0;
     right: 0;
     z-index: 999;
-    padding: 16px 24px;
+    padding: 8px;
     background: #202329;
     border-bottom: 2px solid #97ce4c;
     box-shadow: 0 2px 10px rgba(151, 206, 76, 0.2);
@@ -159,86 +159,28 @@ function CharacterList() {
     }
   `;
 
-  const cardStyles = css`
-    position: relative;
-    background: rgba(32, 35, 41, 0.95);
-    border: none;
-    overflow: hidden;
-    border-radius: 16px;
-    width: 500px;
-    height: 180px;
+  const mainContainerStyles = css`
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     display: flex;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(10px);
-    animation: cardAppear 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-
-    @keyframes cardAppear {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    &:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4),
-                  0 0 20px rgba(151, 206, 76, 0.2);
-
-      .card-image {
-        transform: scale(1.1);
-        filter: brightness(1.1) contrast(1.1);
-      }
-
-      .card-content {
-        background: rgba(32, 35, 41, 0.98);
-      }
-
-      .card-name {
-        color: #97ce4c;
-      }
-
-      .card-info {
-        transform: translateX(5px);
-      }
-
-      &::after {
-        opacity: 1;
-      }
-    }
-
-    &::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(
-        135deg,
-        rgba(151, 206, 76, 0.1) 0%,
-        transparent 50%,
-        rgba(151, 206, 76, 0.05) 100%
-      );
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      z-index: 1;
-    }
+    flex-direction: column;
+    background: #202329;
   `;
 
-  const cardNameStyles = css`
-    transition: all 0.3s ease;
-    position: relative;
-    display: inline-block;
-    font-weight: 600;
-    font-size: 1.2em;
-    color: #fff;
-    margin-bottom: 8px;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  const headerContainerStyles = css`
+    flex: none;
+    background: #202329;
+  `;
+
+  const scrollContainerStyles = css`
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 16px;
+    margin-top: 8px;
   `;
 
   // Efecto para el botón de scroll to top
@@ -270,17 +212,27 @@ function CharacterList() {
   }, [searchTerm, statusFilter, speciesFilter, genderFilter, characters]);
 
   return (
-    <Box sx={{ background: "#202329", minHeight: "100vh", paddingTop: "180px" }}>
+    <Box sx={{ 
+      background: "#202329", 
+      minHeight: "100vh", 
+      overflowX: "hidden",
+      width: "100%",
+      maxWidth: "100vw"
+    }}>
       <Header />
       <Box css={searchBarStyles}>
         <Box
           sx={{
             display: "flex",
-            gap: "12px",
+            flexDirection: { xs: "column", sm: "row" },
+            gap: { xs: "12px", sm: "16px" },
             flexWrap: "wrap",
             justifyContent: "center",
             maxWidth: "1200px",
             margin: "0 auto",
+            padding: { xs: "12px", sm: "16px" },
+            width: "100%",
+            boxSizing: "border-box"
           }}
         >
           <TextField
@@ -290,11 +242,13 @@ function CharacterList() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             sx={{
-              maxWidth: "300px",
+              maxWidth: { xs: "100%", sm: "300px" },
+              width: "100%",
               "& .MuiOutlinedInput-root": {
                 backgroundColor: "rgba(255, 255, 255, 0.05)",
                 borderRadius: "12px",
                 color: "#fff",
+                height: { xs: "40px", sm: "48px" },
                 "& fieldset": {
                   borderColor: "rgba(151, 206, 76, 0.3)",
                 },
@@ -307,137 +261,171 @@ function CharacterList() {
               },
               "& .MuiInputBase-input": {
                 color: "#fff",
+                fontSize: { xs: "14px", sm: "16px" },
+                padding: { xs: "8px 12px", sm: "12px 16px" },
               },
             }}
           />
-          <FormControl
+          <Box
             sx={{
-              minWidth: "160px",
-              "& .MuiOutlinedInput-root": {
-                backgroundColor: "rgba(255, 255, 255, 0.05)",
-                borderRadius: "12px",
-                color: "#fff",
-                "& fieldset": {
-                  borderColor: "rgba(151, 206, 76, 0.3)",
-                },
-                "&:hover fieldset": {
-                  borderColor: "#97ce4c",
-                },
-                "&.Mui-focused fieldset": {
-                  borderColor: "#97ce4c",
-                },
-              },
+              display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
+              gap: { xs: "12px", sm: "16px" },
+              flexWrap: "wrap",
+              width: { xs: "100%", sm: "auto" },
             }}
           >
-            <Select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              displayEmpty
+            <FormControl
               sx={{
-                color: "#fff",
-                "& .MuiSelect-icon": {
-                  color: "#97ce4c",
+                minWidth: { xs: "100%", sm: "140px" },
+                width: { xs: "100%", sm: "auto" },
+                "& .MuiOutlinedInput-root": {
+                  backgroundColor: "rgba(255, 255, 255, 0.05)",
+                  borderRadius: "12px",
+                  color: "#fff",
+                  height: { xs: "40px", sm: "48px" },
+                  "& fieldset": {
+                    borderColor: "rgba(151, 206, 76, 0.3)",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#97ce4c",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#97ce4c",
+                  },
                 },
               }}
             >
-              <MenuItem value="all">All Status</MenuItem>
-              <MenuItem value="alive">Alive</MenuItem>
-              <MenuItem value="dead">Dead</MenuItem>
-              <MenuItem value="unknown">Unknown</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl
-            sx={{
-              minWidth: "160px",
-              "& .MuiOutlinedInput-root": {
-                backgroundColor: "rgba(255, 255, 255, 0.05)",
-                borderRadius: "12px",
-                color: "#fff",
-                "& fieldset": {
-                  borderColor: "rgba(151, 206, 76, 0.3)",
-                },
-                "&:hover fieldset": {
-                  borderColor: "#97ce4c",
-                },
-                "&.Mui-focused fieldset": {
-                  borderColor: "#97ce4c",
-                },
-              },
-            }}
-          >
-            <Select
-              value={speciesFilter}
-              onChange={(e) => setSpeciesFilter(e.target.value)}
-              displayEmpty
+              <Select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                displayEmpty
+                sx={{
+                  color: "#fff",
+                  fontSize: { xs: "14px", sm: "16px" },
+                  padding: { xs: "8px 12px", sm: "12px 16px" },
+                  "& .MuiSelect-icon": {
+                    color: "#97ce4c",
+                  },
+                }}
+              >
+                <MenuItem value="all">All Status</MenuItem>
+                <MenuItem value="alive">Alive</MenuItem>
+                <MenuItem value="dead">Dead</MenuItem>
+                <MenuItem value="unknown">Unknown</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl
               sx={{
-                color: "#fff",
-                "& .MuiSelect-icon": {
-                  color: "#97ce4c",
+                minWidth: { xs: "100%", sm: "140px" },
+                width: { xs: "100%", sm: "auto" },
+                "& .MuiOutlinedInput-root": {
+                  backgroundColor: "rgba(255, 255, 255, 0.05)",
+                  borderRadius: "12px",
+                  color: "#fff",
+                  height: { xs: "40px", sm: "48px" },
+                  "& fieldset": {
+                    borderColor: "rgba(151, 206, 76, 0.3)",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#97ce4c",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#97ce4c",
+                  },
                 },
               }}
             >
-              <MenuItem value="all">All Species</MenuItem>
-              <MenuItem value="human">Human</MenuItem>
-              <MenuItem value="alien">Alien</MenuItem>
-              <MenuItem value="humanoid">Humanoid</MenuItem>
-              <MenuItem value="mythological">Mythological</MenuItem>
-              <MenuItem value="unknown">Unknown</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl
-            sx={{
-              minWidth: "160px",
-              "& .MuiOutlinedInput-root": {
-                backgroundColor: "rgba(255, 255, 255, 0.05)",
-                borderRadius: "12px",
-                color: "#fff",
-                "& fieldset": {
-                  borderColor: "rgba(151, 206, 76, 0.3)",
-                },
-                "&:hover fieldset": {
-                  borderColor: "#97ce4c",
-                },
-                "&.Mui-focused fieldset": {
-                  borderColor: "#97ce4c",
-                },
-              },
-            }}
-          >
-            <Select
-              value={genderFilter}
-              onChange={(e) => setGenderFilter(e.target.value)}
-              displayEmpty
+              <Select
+                value={speciesFilter}
+                onChange={(e) => setSpeciesFilter(e.target.value)}
+                displayEmpty
+                sx={{
+                  color: "#fff",
+                  fontSize: { xs: "14px", sm: "16px" },
+                  padding: { xs: "8px 12px", sm: "12px 16px" },
+                  "& .MuiSelect-icon": {
+                    color: "#97ce4c",
+                  },
+                }}
+              >
+                <MenuItem value="all">All Species</MenuItem>
+                <MenuItem value="human">Human</MenuItem>
+                <MenuItem value="alien">Alien</MenuItem>
+                <MenuItem value="humanoid">Humanoid</MenuItem>
+                <MenuItem value="mythological">Mythological</MenuItem>
+                <MenuItem value="unknown">Unknown</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl
               sx={{
-                color: "#fff",
-                "& .MuiSelect-icon": {
-                  color: "#97ce4c",
+                minWidth: { xs: "100%", sm: "140px" },
+                width: { xs: "100%", sm: "auto" },
+                "& .MuiOutlinedInput-root": {
+                  backgroundColor: "rgba(255, 255, 255, 0.05)",
+                  borderRadius: "12px",
+                  color: "#fff",
+                  height: { xs: "40px", sm: "48px" },
+                  "& fieldset": {
+                    borderColor: "rgba(151, 206, 76, 0.3)",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#97ce4c",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#97ce4c",
+                  },
                 },
               }}
             >
-              <MenuItem value="all">All Genders</MenuItem>
-              <MenuItem value="female">Female</MenuItem>
-              <MenuItem value="male">Male</MenuItem>
-              <MenuItem value="genderless">Genderless</MenuItem>
-              <MenuItem value="unknown">Unknown</MenuItem>
-            </Select>
-          </FormControl>
+              <Select
+                value={genderFilter}
+                onChange={(e) => setGenderFilter(e.target.value)}
+                displayEmpty
+                sx={{
+                  color: "#fff",
+                  fontSize: { xs: "14px", sm: "16px" },
+                  padding: { xs: "8px 12px", sm: "12px 16px" },
+                  "& .MuiSelect-icon": {
+                    color: "#97ce4c",
+                  },
+                }}
+              >
+                <MenuItem value="all">All Genders</MenuItem>
+                <MenuItem value="female">Female</MenuItem>
+                <MenuItem value="male">Male</MenuItem>
+                <MenuItem value="genderless">Genderless</MenuItem>
+                <MenuItem value="unknown">Unknown</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
         </Box>
       </Box>
       <Box
         display="flex"
         flexWrap="wrap"
         justifyContent="center"
-        mt="180px"
-        p="16px"
+        mt="100px"
+        p={{ xs: "16px", sm: "24px" }}
         flexDirection="column"
         alignItems="center"
+        sx={{
+          width: "100%",
+          maxWidth: "100vw",
+          overflowX: "hidden",
+          boxSizing: "border-box"
+        }}
       >
         <Box
           display="flex"
           flexWrap="wrap"
           justifyContent="center"
           width="100%"
-          gap="16px"
+          gap={{ xs: "8px", sm: "16px" }}
+          sx={{
+            maxWidth: "100%",
+            boxSizing: "border-box"
+          }}
         >
           {loading ? (
             // Skeleton loading
@@ -445,7 +433,7 @@ function CharacterList() {
               <Card
                 key={index}
                 sx={{
-                  width: "500px",
+                  width: { xs: "100%", sm: "500px" },
                   height: "180px",
                   borderRadius: "16px",
                   backgroundColor: "rgba(32, 35, 41, 0.95)",
@@ -469,7 +457,17 @@ function CharacterList() {
             ))
           ) : (
             <Fade in={true}>
-              <Box display="flex" flexWrap="wrap" justifyContent="center" gap="16px">
+              <Box 
+                display="flex" 
+                flexWrap="wrap" 
+                justifyContent="center" 
+                gap={{ xs: "8px", sm: "16px" }}
+                sx={{
+                  width: "100%",
+                  maxWidth: "100%",
+                  boxSizing: "border-box"
+                }}
+              >
                 {filteredCharacters.map((character) => {
                   let statusIcon;
                   if (character.status === "Alive") {
@@ -513,7 +511,7 @@ function CharacterList() {
                   return (
                     <Link
                       to={`/character/${character.id}`}
-                      style={{ textDecoration: 'none' }}
+                      style={{ textDecoration: 'none', width: { xs: "100%", sm: "auto" } }}
                       key={character.id}
                     >
                       <Card
@@ -523,7 +521,7 @@ function CharacterList() {
                           border: "none",
                           overflow: "hidden",
                           borderRadius: "16px",
-                          width: "500px",
+                          width: { xs: "100%", sm: "500px" },
                           height: "180px",
                           display: "flex",
                           transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
