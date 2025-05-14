@@ -36,7 +36,7 @@ function Header() {
       <AppBar position="fixed" css={headerStyles} elevation={0}>
         <Toolbar 
           sx={{ 
-            minHeight: isSmallScreen ? "70px" : "85px",
+            minHeight: isSmallScreen ? "50px" : "60px",
             padding: isSmallScreen ? "0 16px" : "0 24px",
             display: "flex",
             justifyContent: "center",
@@ -59,14 +59,14 @@ function Header() {
               alt="Logo"
               css={logoStyles}
               style={{
-                height: isSmallScreen ? "45px" : "60px",
+                height: isSmallScreen ? "35px" : "45px",
                 padding: "4px",
               }}
             />
           </Link>
         </Toolbar>
       </AppBar>
-      <Toolbar sx={{ minHeight: isSmallScreen ? "70px" : "85px" }} />
+      <Toolbar sx={{ minHeight: isSmallScreen ? "50px" : "60px" }} />
     </Box>
   );
 }
