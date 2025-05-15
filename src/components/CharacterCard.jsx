@@ -104,9 +104,10 @@ function CharacterCard() {
   return (
     <Box
       sx={{
-        background: "#202329",
-        minHeight: "100dvh",
+        overflow: "auto", // Controla el desbordamiento
         padding: { xs: "16px", sm: "24px", md: "32px" },
+        display: "flex", // Asegura que el contenido se ajuste correctamente
+        flexDirection: "column", // Organiza el contenido en columna
       }}
     >
       <Link to="/" style={{ textDecoration: "none" }}>
@@ -151,6 +152,8 @@ function CharacterCard() {
           <Card
             sx={{
               maxWidth: { xs: "100%", sm: "600px", md: "800px" },
+              width: "100%", // Asegura que no exceda el ancho del contenedor
+              maxHeight: "calc(100dvh - 64px)", // Limita la altura máxima al viewport menos el padding
               margin: "0 auto",
               background: "rgba(32, 35, 41, 0.95)",
               borderRadius: "16px",
