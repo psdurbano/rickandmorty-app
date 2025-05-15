@@ -68,15 +68,27 @@ function CharacterList() {
   const [speciesFilter, setSpeciesFilter] = useState("all");
   const [genderFilter, setGenderFilter] = useState("all");
 
+  const buildApiUrl = (page = 1) => {
+    let url = `https://rickandmortyapi.com/api/character?page=${page}`;
+    const params = [];
+    if (statusFilter && statusFilter !== "all") params.push(`status=${encodeURIComponent(statusFilter)}`);
+    if (speciesFilter && speciesFilter !== "all") params.push(`species=${encodeURIComponent(speciesFilter)}`);
+    if (genderFilter && genderFilter !== "all") params.push(`gender=${encodeURIComponent(genderFilter)}`);
+    if (searchTerm && searchTerm.trim() !== "") params.push(`name=${encodeURIComponent(searchTerm)}`);
+    if (params.length > 0) {
+      url += `&${params.join("&")}`;
+    }
+    return url;
+  };
+
   const loadMoreCharacters = async () => {
     try {
       setLoading(true);
       const nextPage = Math.floor(characters.length / 20) + 1;
-      const characterData = await fetchData(
-        `https://rickandmortyapi.com/api/character?page=${nextPage}`
-      );
+      const apiUrl = buildApiUrl(nextPage);
+      const characterData = await fetchData(apiUrl);
       if (characterData && characterData.results) {
-        setCharacters([...characters, ...characterData.results]);
+        setCharacters((prev) => [...prev, ...characterData.results]);
       }
     } catch (error) {
       console.error(error);
@@ -85,6 +97,25 @@ function CharacterList() {
     }
   };
 
+  // Resetear personajes al cambiar filtros o búsqueda
+  useEffect(() => {
+    const fetchFilteredCharacters = async () => {
+      setLoading(true);
+      setCharacters([]); // Limpiar personajes actuales
+      const apiUrl = buildApiUrl(1);
+      const characterData = await fetchData(apiUrl);
+      if (characterData && characterData.results) {
+        setCharacters(characterData.results);
+      } else {
+        setCharacters([]);
+      }
+      setLoading(false);
+    };
+    fetchFilteredCharacters();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [statusFilter, speciesFilter, genderFilter, searchTerm]);
+
+  // Ya no es necesario filtrar en frontend, solo setear los personajes
   useEffect(() => {
     setFilteredCharacters(characters);
   }, [characters]);
@@ -202,12 +233,20 @@ function CharacterList() {
     const filtered = characters.filter((character) => {
       const matchesSearch = character.name.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus = statusFilter === "all" || character.status.toLowerCase() === statusFilter.toLowerCase();
-      const matchesSpecies = speciesFilter === "all" || character.species.toLowerCase() === speciesFilter.toLowerCase();
+      // Normalización para species
+      const speciesValue = (character.species || "").toLowerCase().replace(/\s+/g, "");
+      const filterValue = (speciesFilter || "").toLowerCase().replace(/\s+/g, "");
+      let matchesSpecies = true;
+      if (speciesFilter !== "all") {
+        if (filterValue === "unknown") {
+          matchesSpecies = speciesValue === "unknown" || speciesValue === "";
+        } else {
+          matchesSpecies = speciesValue === filterValue;
+        }
+      }
       const matchesGender = genderFilter === "all" || character.gender.toLowerCase() === genderFilter.toLowerCase();
-      
       return matchesSearch && matchesStatus && matchesSpecies && matchesGender;
     });
-    
     setFilteredCharacters(filtered);
   }, [searchTerm, statusFilter, speciesFilter, genderFilter, characters]);
 
@@ -353,7 +392,7 @@ function CharacterList() {
                 <MenuItem value="human">Human</MenuItem>
                 <MenuItem value="alien">Alien</MenuItem>
                 <MenuItem value="humanoid">Humanoid</MenuItem>
-                <MenuItem value="mythological">Mythological</MenuItem>
+                <MenuItem value="Mythological Creature">Mythological</MenuItem>
                 <MenuItem value="unknown">Unknown</MenuItem>
               </Select>
             </FormControl>

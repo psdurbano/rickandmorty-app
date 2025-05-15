@@ -105,7 +105,7 @@ function CharacterCard() {
     <Box
       sx={{
         background: "#202329",
-        minHeight: "100vh",
+        minHeight: "100dvh",
         padding: { xs: "16px", sm: "24px", md: "32px" },
       }}
     >
